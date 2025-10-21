@@ -1,7 +1,11 @@
+import asyncio
 import uuid
 
-from fastapi import FastAPI, HTTPException
+from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi.responses import PlainTextResponse
 
+from .csv_export import export_results_to_csv
+from .job_processor import process_accession_job, process_query_job
 from .job_store import get_job_store
 from .models import (
     AccessionJobRequest,
@@ -21,7 +25,7 @@ async def healthz() -> HealthResponse:
 
 
 @app.post("/api/v1/jobs/query", status_code=202, response_model=JobResponse)
-async def submit_query_job(request: QueryJobRequest) -> JobResponse:
+async def submit_query_job(request: QueryJobRequest, background_tasks: BackgroundTasks) -> JobResponse:
     """Submit a free-text genome metadata job."""
     job_id = str(uuid.uuid4())
     job_store = get_job_store()
@@ -33,7 +37,8 @@ async def submit_query_job(request: QueryJobRequest) -> JobResponse:
         total=request.limit,
     )
     
-    # TODO: Enqueue background task to process job
+    # Enqueue background task to process job
+    background_tasks.add_task(process_query_job, job_id, request.model_dump())
     
     return JobResponse(
         job_id=job.job_id,
@@ -45,7 +50,7 @@ async def submit_query_job(request: QueryJobRequest) -> JobResponse:
 
 
 @app.post("/api/v1/jobs/accessions", status_code=202, response_model=JobResponse)
-async def submit_accession_job(request: AccessionJobRequest) -> JobResponse:
+async def submit_accession_job(request: AccessionJobRequest, background_tasks: BackgroundTasks) -> JobResponse:
     """Submit an accession list metadata job."""
     job_id = str(uuid.uuid4())
     job_store = get_job_store()
@@ -57,7 +62,8 @@ async def submit_accession_job(request: AccessionJobRequest) -> JobResponse:
         total=len(request.accessions),
     )
     
-    # TODO: Enqueue background task to process job
+    # Enqueue background task to process job
+    background_tasks.add_task(process_accession_job, job_id, request.model_dump())
     
     return JobResponse(
         job_id=job.job_id,
@@ -113,7 +119,11 @@ async def get_job_results(job_id: str, format: str = "json"):
     if format == "json":
         return {"results": job.results, "errors": job.errors}
     elif format == "csv":
-        # TODO: Implement CSV export
-        raise HTTPException(status_code=501, detail="CSV export not yet implemented")
+        csv_content = export_results_to_csv(job.results)
+        return PlainTextResponse(
+            content=csv_content,
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=job_{job_id}_results.csv"}
+        )
     else:
         raise HTTPException(status_code=400, detail="Invalid format. Use 'json' or 'csv'.")

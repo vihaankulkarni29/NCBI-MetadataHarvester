@@ -20,12 +20,14 @@ class Job:
     results: list[dict[str, Any]] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
-    def update_progress(self, completed: int | None = None, errors: int | None = None) -> None:
+    def update_progress(self, completed: int | None = None, errors: int | None = None, total: int | None = None) -> None:
         """Update job progress and timestamp."""
         if completed is not None:
             self.progress.completed = completed
         if errors is not None:
             self.progress.errors = errors
+        if total is not None:
+            self.progress.total = total
         self.updated_at = datetime.now(timezone.utc)
 
     def update_status(self, status: JobStatus) -> None:
@@ -105,7 +107,7 @@ class JobStore:
                 job.update_status(status)
 
     async def update_job_progress(
-        self, job_id: str, completed: int | None = None, errors: int | None = None
+        self, job_id: str, completed: int | None = None, errors: int | None = None, total: int | None = None
     ) -> None:
         """
         Update job progress.
@@ -114,10 +116,11 @@ class JobStore:
             job_id: Job identifier
             completed: Completed items count
             errors: Error count
+            total: Total items to process
         """
         async with self._lock:
             if job := self._jobs.get(job_id):
-                job.update_progress(completed=completed, errors=errors)
+                job.update_progress(completed=completed, errors=errors, total=total)
 
     async def add_job_result(self, job_id: str, result: dict[str, Any]) -> None:
         """

@@ -15,6 +15,8 @@ class RetryableHTTPClient:
         base_delay: float = 0.5,
         max_delay: float = 8.0,
         timeout: float = 30.0,
+        http2: bool = False,
+        limits: httpx.Limits | None = None,
     ):
         """
         Initialize retryable HTTP client.
@@ -24,12 +26,16 @@ class RetryableHTTPClient:
             base_delay: Base delay for exponential backoff (seconds)
             max_delay: Maximum delay between retries (seconds)
             timeout: Request timeout (seconds)
+            http2: Enable HTTP/2 if supported by the server
+            limits: Connection pool limits
         """
         self.max_retries = max_retries
         self.base_delay = base_delay
         self.max_delay = max_delay
         self.timeout = timeout
-        self._client = httpx.AsyncClient(timeout=timeout)
+        if limits is None:
+            limits = httpx.Limits(max_connections=10, max_keepalive_connections=10)
+        self._client = httpx.AsyncClient(timeout=timeout, http2=http2, limits=limits)
 
     async def close(self) -> None:
         """Close the HTTP client."""

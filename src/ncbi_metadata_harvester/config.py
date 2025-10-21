@@ -24,6 +24,18 @@ class Settings(BaseSettings):
     retry_base_delay: float = 0.5  # seconds
     retry_max_delay: float = 8.0  # seconds
 
+    # Concurrency for parallel metadata fetching (bounded)
+    # Recommended 6-8 to balance speed and NCBI politeness
+    ncbi_concurrency: int = 6
+
+    # Batch size for efetch of nuccore IDs
+    ncbi_batch_size: int = 20
+
+    # HTTP client tuning
+    http2_enabled: bool = True
+    http_max_connections: int = 50
+    http_max_keepalive: int = 50
+
 
 @lru_cache
 def get_settings() -> Settings:

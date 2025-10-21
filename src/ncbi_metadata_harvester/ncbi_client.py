@@ -16,11 +16,23 @@ class NCBIClient:
     def __init__(self):
         """Initialize NCBI client with settings-based configuration."""
         self.settings = get_settings()
-        self.rate_limiter = TokenBucketRateLimiter(rate=self.settings.ncbi_rate_limit)
+        # Determine effective rate limit: prefer 10 rps when API key is present
+        effective_rate = self.settings.ncbi_rate_limit
+        if self.settings.ncbi_api_key and effective_rate <= 3.0:
+            effective_rate = 10.0
+        burst = max(1, getattr(self.settings, "ncbi_concurrency", 6))
+        self.rate_limiter = TokenBucketRateLimiter(rate=effective_rate, burst=burst)
+        limits = httpx.Limits(
+            max_connections=self.settings.http_max_connections,
+            max_keepalive_connections=self.settings.http_max_keepalive,
+        )
         self.http_client = RetryableHTTPClient(
             max_retries=self.settings.max_retries,
             base_delay=self.settings.retry_base_delay,
             max_delay=self.settings.retry_max_delay,
+            timeout=30.0,
+            http2=self.settings.http2_enabled,
+            limits=limits,
         )
 
     async def close(self) -> None:
