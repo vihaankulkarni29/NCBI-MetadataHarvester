@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+.env
+
+# VS Code
+.vscode/
+
+# Byte-compiled / optimized / DLL files
+*.so
+
+# Coverage
+.coverage
+htmlcov/
+
+# Cache
+.ipynb_checkpoints/
+.pytest_cache/
