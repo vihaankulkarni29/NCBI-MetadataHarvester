@@ -4,7 +4,7 @@
 
 **Run this command:**
 ```powershell
-python extract_metadata.py 50
+python src/extract_metadata.py 50
 ```
 
 That's it! The script will:
@@ -96,17 +96,17 @@ Spreadsheet-friendly format with flattened fields:
 
 ### Extract first 50 (default):
 ```powershell
-python extract_metadata.py
+python src/extract_metadata.py
 ```
 
 ### Extract first 100:
 ```powershell
-python extract_metadata.py 100
+python src/extract_metadata.py 100
 ```
 
 ### Extract just 10 for testing:
 ```powershell
-python extract_metadata.py 10
+python src/extract_metadata.py 10
 ```
 
 ## 📈 Live Progress Example
@@ -188,7 +188,7 @@ Want to process your entire list? You can!
 **Option 1: Process in batches**
 ```powershell
 # Batch 1: First 100
-python extract_metadata.py 100
+python src/extract_metadata.py 100
 
 # Batch 2: Next 100 (modify script to skip first 100)
 # Batch 3: Next 100
@@ -197,14 +197,14 @@ python extract_metadata.py 100
 
 **Option 2: One big job (will take ~20-30 hours)**
 ```powershell
-python extract_metadata.py 61160
+python src/extract_metadata.py 61160
 ```
 
 **Recommendation:** Start with 50, verify the results look good, then scale up!
 
 ## 📚 More Details
 
-See `EXTRACTION_GUIDE.md` for:
+See `docs/EXTRACTION_GUIDE.md` for:
 - Alternative methods (PowerShell, Python code)
 - API endpoint details
 - Manual job submission
@@ -219,5 +219,5 @@ See `EXTRACTION_GUIDE.md` for:
 python -m uvicorn src.ncbi_metadata_harvester.main:app --host 127.0.0.1 --port 8000
 
 # Step 2: Run extraction (in this terminal)
-python extract_metadata.py 50
+python src/extract_metadata.py 50
 ```

@@ -12,7 +12,7 @@ A Python-based tool that extracts high-quality genome metadata from NCBI using e
 
 ## 🚀 Quick Start: Extract Metadata from Your Accession List
 
-**See detailed guide:** [`HOW_TO_EXTRACT.md`](HOW_TO_EXTRACT.md)
+**See detailed guide:** [`docs/HOW_TO_EXTRACT.md`](docs/HOW_TO_EXTRACT.md)
 
 ### 1. Start the server (separate terminal):
 ```powershell
@@ -21,7 +21,7 @@ python -m uvicorn src.ncbi_metadata_harvester.main:app --host 127.0.0.1 --port 8
 
 ### 2. Extract first 50 genomes from `accession_list.txt`:
 ```powershell
-python extract_metadata.py 50
+python src/extract_metadata.py 50
 ```
 
 Results are saved to `results/` folder in both JSON and CSV formats!
@@ -31,8 +31,10 @@ Results are saved to `results/` folder in both JSON and CSV formats!
 ## 📚 Documentation
 
 ### User Guides
-- **[HOW_TO_EXTRACT.md](HOW_TO_EXTRACT.md)** - Step-by-step guide to extract metadata from your accession list
-- **[EXTRACTION_GUIDE.md](EXTRACTION_GUIDE.md)** - Detailed methods (script, PowerShell, Python)
+- **[docs/HOW_TO_EXTRACT.md](docs/HOW_TO_EXTRACT.md)** - Step-by-step guide to extract metadata from your accession list
+- **[docs/EXTRACTION_GUIDE.md](docs/EXTRACTION_GUIDE.md)** - Detailed methods (script, PowerShell, Python)
+- **[docs/MONITORING_GUIDE.md](docs/MONITORING_GUIDE.md)** - How to monitor jobs and verify results
+- **[docs/INTEGRATION_GUIDE.md](docs/INTEGRATION_GUIDE.md)** - Integrate this service into other tools
 
 ### Design Documents
 - [docs/product-spec.md](docs/product-spec.md) — Requirements, use cases, acceptance criteria
@@ -90,7 +92,7 @@ All 24 tests should pass ✅
 
 ### Extract from accession list
 ```powershell
-python extract_metadata.py 50
+python src/extract_metadata.py 50
 ```
 
 ### Test with known accessions
@@ -233,5 +235,5 @@ For issues or questions, please open an issue on GitHub.
 
 ---
 
-**Ready to extract genome metadata? See [HOW_TO_EXTRACT.md](HOW_TO_EXTRACT.md) to get started!** 🚀
+**Ready to extract genome metadata? See [docs/HOW_TO_EXTRACT.md](docs/HOW_TO_EXTRACT.md) to get started!** 🚀
 Then open http://127.0.0.1:8000/healthz

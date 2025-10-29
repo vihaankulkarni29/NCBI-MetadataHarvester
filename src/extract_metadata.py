@@ -56,13 +56,15 @@ async def extract_metadata_from_file(accession_file: str, limit: int = 50, outpu
         
         # Poll for completion
         print(f"\n⏳ Waiting for job to complete...")
-        print("   (This may take several minutes for 50 genomes)")
+        print(f"   (This may take ~30-40 minutes for 50 genomes)")
+        print(f"   💡 Tip: Press Ctrl+C to stop waiting (job will continue in background)")
         
         last_progress = {"completed": 0, "total": 0, "errors": 0}
         dots = 0
         status = "queued"
         
-        for i in range(300):  # Max 10 minutes (300 * 2s)
+        # Increase timeout: 60 minutes max (1800 iterations * 2s)
+        for i in range(1800):
             await asyncio.sleep(2)
             
             try:
@@ -95,9 +97,12 @@ async def extract_metadata_from_file(accession_file: str, limit: int = 50, outpu
                 return
         
         if status not in ["succeeded", "failed"]:
-            print("\n⚠️  Job still running after timeout. Check status manually.")
-            print(f"   Job ID: {job_id}")
-            print(f"   Status URL: {base_url}/api/v1/jobs/{job_id}")
+            print("\n⚠️  Job still running after timeout (60 minutes).")
+            print(f"   This is unusual - job may be stuck or very large.")
+            print(f"\n💡 You can check status manually with:")
+            print(f"   python src/check_job.py {job_id}")
+            print(f"\n   Or monitor continuously:")
+            print(f"   python src/monitor_job.py {job_id}")
             return
         
         # Fetch results

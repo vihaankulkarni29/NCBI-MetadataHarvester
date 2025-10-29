@@ -18,12 +18,12 @@
 
 ### Extract first 50 genomes:
 ```powershell
-python extract_metadata.py
+python src/extract_metadata.py
 ```
 
 ### Extract a different number (e.g., 100):
 ```powershell
-python extract_metadata.py 100
+python src/extract_metadata.py 100
 ```
 
 ### What it does:
